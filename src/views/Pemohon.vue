@@ -3,8 +3,8 @@
     <MainHeader title="Maklumat Pemohon" />
     <div class="row mb-3">
       <div class="col-12 text-center">
-        <div class="card " :class="payment.status">
-          <div class="card-body text-white py-2">
+        <div class="card" :class="payment.status" @click="updateSemakan">
+          <div class="card-body text-white py-2 text-uppercase">
             <strong>{{ payment.label }}</strong>
           </div>
         </div>
@@ -337,256 +337,6 @@
         </div>
       </div>
 
-      <div class="card mb-2">
-        <div class="card-header text-left">
-          <div>Butir - butir penganjur di malaysia</div>
-          <div>
-            <i>particulars of sponsor in malaysia</i>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="row text-left">
-            <div class="col-sm-12 text-left">
-              <div class="form-group">
-                <label for>
-                  Nama Penuh
-                  <i class="fas fa-pencil-paintbrush"></i>
-                </label>
-                <input
-                  type="text"
-                  name="nama_penuh_penaja"
-                  v-model="info.nama_penuh_penaja"
-                  class="form-control form-control-sm text-uppercase"
-                />
-              </div>
-            </div>
-
-            <div class="col-sm-12 col-md-6 text-left">
-              <div class="form-group">
-                <label for>
-                  No Kad Pengenalan
-                  <i class="fas fa-pencil-paintbrush"></i>
-                </label>
-                <input
-                  type="text"
-                  name="kad_pengenalan_penaja"
-                  v-model="info.kad_pengenalan_penaja"
-                  class="form-control form-control-sm"
-                />
-              </div>
-            </div>
-
-            <div class="col-sm-12 col-md-6 text-left">
-              <div class="form-group">
-                <label for>
-                  No Telefon
-                  <i class="fas fa-pencil-paintbrush"></i>
-                </label>
-                <input
-                  type="text"
-                  name="no_telefon_penaja"
-                  v-model="info.no_telefon_penaja"
-                  class="form-control form-control-sm"
-                />
-              </div>
-            </div>
-
-            <div class="col-sm-12 text-left">
-              <div class="form-group mb-1">
-                <label for>
-                  Alamat
-                  <i class="fas fa-pencil-paintbrush"></i>
-                </label>
-                <input
-                  type="text"
-                  name="alamat_penaja_1"
-                  v-model="info.alamat_penaja_1"
-                  class="form-control form-control-sm text-uppercase"
-                />
-              </div>
-            </div>
-
-            <div class="col-sm-12 text-left">
-              <div class="form-group mb-1">
-                <input
-                  type="text"
-                  name="alamat_penaja_2"
-                  v-model="info.alamat_penaja_2"
-                  id
-                  class="form-control form-control-sm text-uppercase"
-                />
-              </div>
-            </div>
-
-            <div class="col-sm-12 text-left">
-              <div class="form-group">
-                <input
-                  type="text"
-                  name="alamat_penaja_3"
-                  v-model="info.alamat_penaja_3"
-                  class="form-control form-control-sm text-uppercase"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header text-left">
-          <div>butir - butir permohonan</div>
-          <div>
-            <i>detail off application</i>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="row text-left">
-            <div class="col-sm-12 col-lg-6 text-left">
-              <div class="form-group">
-                <label for>
-                  Tempoh Tinggal Yang Dicadangkan Bulan
-                  <i class="fas fa-pencil-paintbrush"></i>
-                </label>
-                <div class="input-group">
-                  <input
-                    type="text"
-                    name="tempoh_tinggaL_yang_dicadangkan"
-                    v-model="info.tempoh_tinggaL_yang_dicadangkan"
-                    class="form-control form-control-sm"
-                  />
-                  <div class="input-group-append">
-                    <span class="input-group-text" id="basic-addon2"
-                      >bulan</span
-                    >
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-sm-12 col-lg-6 text-left">
-              <div class="form-group">
-                <label for>
-                  Tujuan Perjalanan
-                  <i class="fas fa-pencil-paintbrush"></i>
-                </label>
-                <div class="form-check">
-                  <label class="form-check-label">
-                    <input
-                      type="radio"
-                      class="form-check-input"
-                      value="Bercuti"
-                      name="tujuan_perjalanan"
-                      v-model="info.tujuan_perjalanan"
-                      @change="radioTujuanPerjalanan"
-                    />Bercuti
-                  </label>
-                </div>
-                <div class="form-check">
-                  <label class="form-check-label">
-                    <input
-                      type="radio"
-                      class="form-check-input"
-                      value="urusan perniagaan"
-                      name="tujuan_perjalanan"
-                      v-model="info.tujuan_perjalanan"
-                      @change="radioTujuanPerjalanan"
-                    />Urusan Perniagaan
-                  </label>
-                </div>
-                <div class="form-check">
-                  <label class="form-check-label">
-                    <input
-                      type="radio"
-                      class="form-check-input"
-                      value="melawat saudara mara / kawan"
-                      name="tujuan_perjalanan"
-                      v-model="info.tujuan_perjalanan"
-                      @change="radioTujuanPerjalanan"
-                    />Melawat Saudara Mara / Kawan
-                  </label>
-                </div>
-                <div class="form-check">
-                  <label class="form-check-label">
-                    <input
-                      type="radio"
-                      class="form-check-input"
-                      value="bekerja"
-                      name="tujuan_perjalanan"
-                      v-model="info.tujuan_perjalanan"
-                      @change="radioTujuanPerjalanan"
-                    />Bekerja
-                  </label>
-                </div>
-                <div class="form-check">
-                  <label class="form-check-label">
-                    <input
-                      type="radio"
-                      class="form-check-input"
-                      value="transit"
-                      v-model="info.tujuan_perjalanan"
-                      name="tujuan_perjalanan"
-                      @change="radioTujuanPerjalanan"
-                    />Transit
-                  </label>
-                </div>
-                <div class="form-check">
-                  <label class="form-check-label">
-                    <input
-                      type="radio"
-                      class="form-check-input"
-                      value="urusan rasmi"
-                      name="tujuan_perjalanan"
-                      v-model="info.tujuan_perjalanan"
-                      @change="radioTujuanPerjalanan"
-                    />Urusan Rasmi
-                  </label>
-                </div>
-                <div class="form-check">
-                  <label class="form-check-label">
-                    <input
-                      type="radio"
-                      class="form-check-input"
-                      value="persidangan"
-                      name="tujuan_perjalanan"
-                      v-model="info.tujuan_perjalanan"
-                      @change="radioTujuanPerjalanan"
-                    />Persidangan
-                  </label>
-                </div>
-                <div class="form-check">
-                  <label class="form-check-label">
-                    <input
-                      type="radio"
-                      class="form-check-input"
-                      value="lain-lain"
-                      name="tujuan_perjalanan"
-                      v-model="info.tujuan_perjalanan"
-                      @change="radioTujuanPerjalanan"
-                    />Lain-lain
-                  </label>
-                </div>
-
-                <div
-                  v-if="info.tujuan_perjalanan == 'lain-lain'"
-                  class="form-group"
-                >
-                  <label for>
-                    Lain - lain (Nyatakan)
-                    <i class="fas fa-pencil-paintbrush"></i>
-                  </label>
-                  <input
-                    type="text"
-                    name="tujuan_perjalanan_lain"
-                    v-model="info.tujuan_perjalanan_lain"
-                    class="form-control form-control-sm"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div class="row d-none">
         <div class="col-12 mt-4">
           <div class="form-group">
@@ -644,6 +394,7 @@ export default {
         ]
       },
       info: {
+        id_pemohon: "",
         nama: "",
         jantina: "LELAKI",
         tempat_lahir: "INDONESIA",
@@ -688,13 +439,20 @@ export default {
       let resp = response.data.response;
       this.button.next = "Kemaskini dan Seterusnya";
       this.info = resp.data_pemohon;
+      this.info.id_pemohon = resp.id;
       this.payment = {
-        label: resp.payment.status === "" ? "NOT PAID" : "PAID"
+        label: resp.payment.status === "" ? "NOT PAID" : resp.payment.status
       };
-      if (resp.payment.status === "") {
-        this.payment.status = "bg-danger";
-      } else {
-        this.payment.status = "bg-success";
+      switch (resp.payment.status) {
+        case "semakan":
+          this.payment.status = "bg-warning";
+          break;
+        case "paid":
+          this.payment.status = "bg-success";
+          break;
+        case "":
+          this.payment.status = "bg-danger";
+          break;
       }
     });
   },
@@ -731,6 +489,34 @@ export default {
       if ((keyCode < 48 || keyCode > 57) && keyCode !== 46) {
         $event.preventDefault();
       }
+    },
+    updateSemakan: function() {
+      Swal.fire({
+        title: "Status Pembayaran?",
+        text: "Pembayaran oleh pemohon sah!",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Ya"
+      }).then(result => {
+        if (result.value) {
+          this.info.temporary_id = this.$route.params.temporary_id;
+          let body = this.info;
+          Axios.post(API.baseurl + "koleksi/update-semakan", {
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: body
+          }).then(() => {
+            Swal.fire(
+              "Berjaya!",
+              "Pemohon telah menjelaskan pembayaran",
+              "success"
+            );
+          });
+        }
+      });
     },
     kemaskiniMaklumat: function() {
       Axios.post(API.baseurl + "register/updateinfo", {
