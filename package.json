@@ -11,10 +11,12 @@
     "@chenfengyuan/vue-qrcode": "^1.0.0",
     "axios": "^0.18.0",
     "core-js": "^2.6.5",
+    "csv-parser": "^2.2.0",
     "register-service-worker": "^1.6.2",
     "sweetalert2": "^8.8.1",
     "vue": "^2.6.6",
     "vue-router": "^3.0.1",
+    "vue-simple-upload": "^0.1.6",
     "vuejs-datepicker": "^1.5.4"
   },
   "devDependencies": {
