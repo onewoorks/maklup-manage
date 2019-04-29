@@ -6,6 +6,8 @@ import Pemohon from "./views/Pemohon";
 import Kutipan from "@/views/Kutipan";
 import TetapanSistem from "@/views/TetapanSistem";
 import AgentVerify from "@/views/AgentVerify";
+import CdmConsilation from "@/views/CdmConsilation";
+import TicketPemohon from "@/views/TicketPemohon"
 
 Vue.use(Router);
 
@@ -42,6 +44,16 @@ export default new Router({
       path: "/agent_verify",
       name: "agent_verify",
       component: AgentVerify
+    },
+    {
+      path: "/cdm-consilation",
+      name: "cdm_consilation",
+      component: CdmConsilation
+    },
+    {
+      path: "/ticket-pemohon",
+      name: "ticket_pemohon",
+      component: TicketPemohon
     },
     {
       path: "/about",
