@@ -51,7 +51,7 @@ export default new Router({
       component: CdmConsilation
     },
     {
-      path: "/ticket-pemohon",
+      path: "/ticket-pemohon/:register_id/:temporary_id",
       name: "ticket_pemohon",
       component: TicketPemohon
     },
