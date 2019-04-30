@@ -35,9 +35,11 @@
             <td>{{ item.payment_status }}</td>
             <td>{{ item.payment_option }}</td>
             <td>
-              <div class="btn btn-sm btn-primary py-0"
-              @click="goToTicket(item.register_id, item.temporary_id)">
-                <i class="far fa-id-badge"></i>
+              <div
+                class="btn btn-sm btn-outline-secondary py-0"
+                @click="goToTicket(item.register_id, item.temporary_id)"
+              >
+                <i class="fas fa-ticket-alt"></i>
               </div>
               <div
                 @click="goToPemohon(item.register_id, item.temporary_id)"
@@ -91,14 +93,14 @@ export default {
         }
       });
     },
-    goToTicket: function(register_id, temporary_id){
+    goToTicket: function(register_id, temporary_id) {
       this.$router.push({
         name: "ticket_pemohon",
         params: {
           register_id: register_id,
           temporary_id: temporary_id
         }
-      })
+      });
     }
   }
 };

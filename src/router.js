@@ -7,7 +7,7 @@ import Kutipan from "@/views/Kutipan";
 import TetapanSistem from "@/views/TetapanSistem";
 import AgentVerify from "@/views/AgentVerify";
 import CdmConsilation from "@/views/CdmConsilation";
-import TicketPemohon from "@/views/TicketPemohon"
+import TicketPemohon from "@/views/TicketPemohon";
 
 Vue.use(Router);
 

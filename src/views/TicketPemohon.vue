@@ -1,17 +1,19 @@
 <template>
   <div>
-    <MainHeader title="Tiket Pemohon"/>
+    <MainHeader class="no-print" title="Tiket Pemohon" />
     <div>
-      <div class="card">
+      <div class="card full-print">
         <div class="card-body">
           <div class="row">
-            <div class="col-4 text-left">
+            <div class="col-5 text-left">
               <table class="table table-sm mt-4">
                 <tbody>
                   <tr>
                     <th>Status Bayaran</th>
                     <td class="text-right text-uppercase">
-                      {{ ticket.payment.status}}
+                      <div>
+                        {{ ticket.payment ? ticket.payment.status : "" }}
+                      </div>
                     </td>
                   </tr>
                   <tr>
@@ -20,11 +22,20 @@
                   </tr>
                   <tr>
                     <th style="vertical-align: top;">Pemohon</th>
-                    <td class="text-right text-uppercase">{{ ticket.data_pemohon.nama}}</td>
+                    <td class="text-right text-uppercase">
+                      {{ ticket.data_pemohon ? ticket.data_pemohon.nama : "" }}
+                    </td>
                   </tr>
                   <tr>
                     <th style="vertical-align: top;">No Telefon</th>
-                    <td class="text-right text-uppercase"> + {{ ticket.data_pemohon.kod_negara + ticket.data_pemohon.no_telefon }}</td>
+                    <td class="text-right text-uppercase">
+                      +
+                      {{
+                        ticket.data_pemohon
+                          ? ticket.data_pemohon.kod_negara
+                          : "" + ticket.data_pemohon.no_telefon
+                      }}
+                    </td>
                   </tr>
                   <tr>
                     <th style="vertical-align: top;">Email</th>
@@ -37,64 +48,95 @@
                   </tr>
                   <tr>
                     <th>Cara Bayaran</th>
-                    <td class="text-right text-uppercase">{{ ticket.payment.option}}</td>
+                    <td class="text-right text-uppercase">
+                      {{ ticket.payment.option }}
+                    </td>
                   </tr>
 
                   <tr>
                     <td colspan="2">
-                      <br>
-                      <br>
+                      <br />
+                      <br />
                     </td>
                   </tr>
 
                   <tr>
                     <th>Kompaun</th>
-                    <td class="text-right">MYR  800.00</td>
+                    <td class="text-right">MYR 800.00</td>
                   </tr>
                   <tr>
                     <th>Cas Tambahan</th>
                     <td class="text-right">
                       <div v-if="ticket.payment.option == 'cdm'">MYR 0.00</div>
-                      <div v-if="ticket.payment.option == 'billplz'">MYR 1.50</div>
+                      <div v-if="ticket.payment.option == 'billplz'">
+                        MYR 1.50
+                      </div>
                     </td>
                   </tr>
                   <tr>
                     <th>Jumlah</th>
                     <td class="text-right">
-                      <div v-if="ticket.payment.option == 'cdm'">MYR 800.00</div>
-                      <div v-if="ticket.payment.option == 'billplz'">MYR 801.50</div>
+                      <div v-if="ticket.payment.option == 'cdm'">
+                        MYR 800.00
+                      </div>
+                      <div v-if="ticket.payment.option == 'billplz'">
+                        MYR 801.50
+                      </div>
                     </td>
                   </tr>
 
                   <tr>
                     <td colspan="2" class="text-center pt-3 pb-0">
-                      <Barcode :value="ticket.temporary_id" height="50" display-value="true"></barcode>
+                      <Barcode
+                        :value="ticket.temporary_id"
+                        height="50"
+                        display-value="true"
+                      ></Barcode>
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
-            <div class="col-8">
+            <div class="col-7">
               <h4>
                 <strong>TARIKH TEMUJANJI</strong>
               </h4>
-              <h3>{{ ticket.appointment.slot  }} ({{  ticket.appointment.session }})</h3>
-              <Qrcode v-if="ticket.payment.status == 'paid'" :value="qrtoken" :options="{ width: 290 }"></qrcode>
-              <Qrcode v-if="ticket.payment.status == 'semakan'" :value="qrtoken" :options="{ width: 290 }"></qrcode>
+              <h3>
+                {{ ticket.appointment.slot }} ({{ ticket.appointment.session }})
+              </h3>
+              <Qrcode
+                v-if="ticket.payment"
+                :value="qrtoken"
+                :options="{ width: 290 }"
+              ></Qrcode>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div class="mt-3 text-right no-print">
+        <div class="btn btn-info" @click="printTicket">
+          <i class="fa fa-print" aria-hidden="true"></i> Cetak Tiket
         </div>
       </div>
     </div>
   </div>
 </template>
 
+<style>
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
+</style>
+
 <script>
 import MainHeader from "@/components/MainHeader";
-import Axios from 'axios'
-import Qrcode from '@chenfengyuan/vue-qrcode'
-import Barcode from 'vue-barcode'
-import { API } from '../Config'
+import Axios from "axios";
+import Qrcode from "@chenfengyuan/vue-qrcode";
+import Barcode from "vue-barcode";
+import { API } from "../Config";
 
 export default {
   name: "ticket_pemohon",
@@ -103,31 +145,34 @@ export default {
     Barcode,
     Qrcode
   },
-  data: function(){
+  data: function() {
     return {
-      ticket: {},
-      qrtoken: ""
-    }
+      ticket: {
+        data_pemohon: {},
+        payment: {},
+        appointment: {}
+      },
+      qrtoken: "--"
+    };
   },
-  mounted: function(){
-this.initData()
+  mounted: function() {
+    this.initData();
   },
   methods: {
-    initData: function(){
+    initData: function() {
       Axios.get(
-      API.baseurl +
-        "register/info?regid=" +
-        this.$route.params.register_id +
-        "&tempid=" +
-        this.$route.params.temporary_id
-    ).then(response=>{
-      let resp = response.data.response
-      this.ticket = resp
-      this.generateQrCode()
-    })
-    }
-  },
-  generateQrCode: function() {
+        API.baseurl +
+          "register/info?regid=" +
+          this.$route.params.register_id +
+          "&tempid=" +
+          this.$route.params.temporary_id
+      ).then(response => {
+        let resp = response.data.response;
+        this.ticket = resp;
+        this.generateQrCode();
+      });
+    },
+    generateQrCode: function() {
       let body = {
         register_id: this.$route.params.register_id,
         temporary_id: this.$route.params.temporary_id,
@@ -143,5 +188,9 @@ this.initData()
         this.qrtoken = response.data.response.token;
       });
     },
+    printTicket: function() {
+      window.print();
+    }
+  }
 };
 </script>
