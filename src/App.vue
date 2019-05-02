@@ -18,7 +18,7 @@
           </div>
         </nav>
 
-        <main role="main" class="col col-md-9 ml-sm-auto col-lg-10 px-4">
+        <main role="main" class="ycol col-md-9 ml-sm-auto col-lg-10 px-4">
           <router-view />
         </main>
       </div>

@@ -48,7 +48,6 @@ export default {
   },
   mounted: function() {
     var link = this.$route.name;
-    console.log(link);
   }
 };
 </script>
