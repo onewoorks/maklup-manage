@@ -1,5 +1,10 @@
 <template>
+  <div>
   <MainHeader title="Dashboard" />
+  this is dashboard 1.1
+  </div>
+
+
 </template>
 
 <script>

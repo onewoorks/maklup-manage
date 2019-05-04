@@ -14,7 +14,7 @@ const Cimb = {
             moneyIn: data['Money In'],
             moneyOut: data['Money Out'],
             balance: data['Balance'],
-            transaction: transaction_parser(data['Transaction Details'])
+            transaction: data['Transaction Details']
         }
         return cimb
     },
