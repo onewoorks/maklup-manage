@@ -29,7 +29,7 @@
           >CDM Consilation</router-link
         >
       </li>
-      <li class="nav-item">
+      <li class="nav-item d-none">
         <router-link class="nav-link" to="/agent_verify" active-class="active"
           >Agent Verify</router-link
         >

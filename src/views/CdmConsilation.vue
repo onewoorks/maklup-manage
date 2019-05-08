@@ -20,11 +20,14 @@
           <td class="text-left">{{ file.uploadTime }}</td>
           <td class="text-left">{{ file.fileName }}</td>
           <td>
-            <div class="btn btn-default btn-sm" @click="consolidate(file.fileName)">View</div>
+            <div class="btn btn-outline-secondary btn-sm" @click="consolidate(file.fileName)">View</div>
           </td>
         </tr>
       </tbody>
     </table>
+
+    <div v-if="alert.info" class="alert alert-info">TRANSACTION FETCH & CHECKING... PLEASE WAIT!</div>
+    <div v-if="alert.no_cdm_transaction" class="alert alert-warning">NO CDM CASH DEPOSIT FOUND IN TRANSACTION RECORD</div>
 
     <table v-if="items.length > 0" class="table table-bordered text-left">
       <thead>
@@ -46,7 +49,7 @@
           <td class="text-uppercase">
             <div>{{ (item.transaction.cdm_data) ? item.transaction.cdm_data.data_pemohon.nama :'' }}</div>
             <div>
-              <i>{{ (item.transaction.cdm_data) ? item.transaction.cdm_data.data_pemohon.warganegara :'' }}</i>
+              <i class='small-text'>{{ (item.transaction.cdm_data) ? item.transaction.cdm_data.data_pemohon.warganegara :'' }}</i>
             </div>
           </td>
           <td class="text-center">
@@ -61,6 +64,13 @@
     </div>
   </div>
 </template>
+
+<style>
+.small-text {
+  font-size: 0.7rem
+}
+</style>
+
 
 <script>
 import MainHeader from "@/components/MainHeader";
@@ -83,7 +93,11 @@ export default {
       csvData: [],
       items: [],
       files: [],
-      verify: []
+      verify: [],
+      alert: {
+        info: false,
+        no_cdm_transaction: false
+      }
     };
   },
   mounted: function() {
@@ -115,11 +129,18 @@ export default {
       });
     },
     consolidate: async function(filename) {
+      this.alert.info = true
       Axios.get(
         process.env.VUE_APP_ENGINE_URL + "reader/cdm-consolidate/" + filename
       ).then(response => {
+        this.alert.info = false
         let resp = response.data;
         this.items = CimbParser.parserBulk(resp);
+        if(resp.length > 0){
+          this.alert.no_cdm_transaction = false
+        } else {
+          this.alert.no_cdm_transaction = true
+        }
       });
     }
   }

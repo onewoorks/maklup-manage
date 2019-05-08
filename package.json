@@ -19,6 +19,7 @@
     "sweetalert2": "^8.8.1",
     "vue": "^2.6.6",
     "vue-barcode": "^1.2.0",
+    "vue-bootstrap-datetimepicker": "^5.0.1",
     "vue-router": "^3.0.1",
     "vue-simple-upload": "^0.1.6",
     "vuejs-datepicker": "^1.5.4"

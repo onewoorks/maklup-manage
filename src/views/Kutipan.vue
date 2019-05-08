@@ -53,7 +53,6 @@ export default {
   mounted: function() {
     Axios.get(API.baseurl + "koleksi/dashboard").then(response => {
       let resp = response.data.response;
-      console.log(resp);
       this.bayar = {
         billplz: resp.total_bayar.billplz,
         cdm: resp.total_bayar.cdm,

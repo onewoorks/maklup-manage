@@ -256,9 +256,6 @@
       <div class="card mb-2">
         <div class="card-header text-left">
           <div>Maklumat Pasport perjalanan / dokumen perjalanan</div>
-          <div>
-            <i>particulars of passport / travel document</i>
-          </div>
         </div>
 
         <div class="card-body">
@@ -337,6 +334,90 @@
         </div>
       </div>
 
+
+      <div class="card mb-2">
+        <div class="card-header text-left">Maklumat Tiket Perjalanan Pulang</div>
+        <div class="card-body">
+          <div class="row text-left">
+            <div class="col-sm-12 col-lg-6">
+              <div class="form-group">
+                <label>Jenis Pengangkutan</label>
+                <div>
+                  <div
+                    class="form-check-inline"
+                    v-for="(option,key) in options.pengangkutan"
+                    v-bind:key="key"
+                  >
+                    <label class="form-check-label">
+                      <input
+                        type="radio"
+                        v-model="info.tiket_pulang.jenis_pengangkutan"
+                        class="form-check-input"
+                        :value="option.value"
+                      >
+                      {{ option.text }}
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-12 col-lg-6">
+              <div class="form-group">
+                <label>No Tiket</label>
+                <input
+                  type="text"
+                  v-model="info.tiket_pulang.no_tiket"
+                  class="form-control text-uppercase"
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="row text-left">
+            <div class="col-sm-6 col-lg-6">
+              <div class="form-group">
+                <label>Tarikh Perjalanan</label>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i class="far fa-calendar-alt"></i>
+                    </span>
+                  </div>
+                  <DatePicker2 v-model="info.tiket_pulang.tarikh" :config="options.tarikh_sah"></DatePicker2>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-lg-6">
+              <div class="form-group">
+                <label>Masa</label>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i class="far fa-calendar-alt"></i>
+                    </span>
+                  </div>
+                  <DatePicker2 v-model="info.tiket_pulang.masa" :config="options.masa_saja"></DatePicker2>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row text-left">
+            <div class="col-sm-12">
+              <div class="form-group">
+                <label>Destinasi</label>
+                <input
+                  type="text"
+                  v-model="info.tiket_pulang.destinasi"
+                  class="form-control text-uppercase"
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
       <div class="row d-none">
         <div class="col-12 mt-4">
           <div class="form-group">
@@ -356,6 +437,8 @@ import Datepicker from "vuejs-datepicker";
 import Axios from "axios";
 import { API } from "../Config";
 import Swal from "sweetalert2";
+import DatePicker2 from "vue-bootstrap-datetimepicker";
+import "pc-bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css";
 
 export default {
   name: "pemohon",
@@ -391,7 +474,18 @@ export default {
           { text: "KAZAKHSTAN", value: "KAZAKHSTAN" },
           { text: "UZBEKISTAN", value: "UZBEKISTAN" },
           { text: "TURKMENISTAN", value: "TURKMENISTAN" }
-        ]
+        ],
+        tarikh_sah: {
+          format: "D MMMM YYYY",
+        },
+        masa_saja: {
+          format: "LT"
+        },
+        pengangkutan: [
+          { text: "KERETA, KERETAPI, BAS", value: "KERETA, KERETAPI, BAS" },
+          { text: "KAPAL TERBANG", value: "KAPAL TERBANG" },
+          { text: "FERI, KAPAL", value: "FERI, KAPAL" }
+        ],
       },
       info: {
         id_pemohon: "",
@@ -419,13 +513,17 @@ export default {
         alamat_penaja_3: "",
         tempoh_tinggaL_yang_dicadangkan: "",
         tujuan_perjalanan: "Bercuti",
-        tujuan_perjalanan_lain: ""
+        tujuan_perjalanan_lain: "",
+        tiket_pulang: {
+          jenis_pengangkutan: ""
+        }
       }
     };
   },
   components: {
     datepicker: Datepicker,
-    MainHeader
+    MainHeader,
+    DatePicker2
   },
   mounted() {
     Axios.get(
