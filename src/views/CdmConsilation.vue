@@ -1,11 +1,41 @@
 <template>
   <div>
     <MainHeader title="CDM Consilation"/>
-    <div class="d-none">
-      <FileUpload target="http://localhost/pulkam-api/upload/" action="POST"/>
+
+    <div class="card mb-3">
+      <div class="card-header text-left">UPLOAD NEW TRANSACTION FILE</div>
+      <div class="card-body">
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span
+              class="input-group-text"
+              id="inputGroupFileAddon01"
+              style="font-size:0.9rem"
+            >Upload</span>
+          </div>
+          <div class="custom-file">
+            <input
+              ref="file"
+              type="file"
+              class="text-left custom-file-input"
+              @change="resetUploadButton"
+            >
+            <label
+              class="text-left custom-file-label"
+            >{{ (file == '' ) ? 'Choose File' : file.name }}</label>
+          </div>
+        </div>
+        <div class="text-right mt-3">
+          <div
+            class="btn"
+            :class="alert.upload.buttonColor"
+            @click="uploadNewCdm"
+          >{{ alert.upload.buttonLabel }}</div>
+        </div>
+      </div>
     </div>
 
-    <table class="table table-bordered">
+    <table v-if="tables.cdmList" class="table table-bordered">
       <thead>
         <tr>
           <th>No</th>
@@ -27,8 +57,13 @@
     </table>
 
     <div v-if="alert.info" class="alert alert-info">TRANSACTION FETCH & CHECKING... PLEASE WAIT!</div>
-    <div v-if="alert.no_cdm_transaction" class="alert alert-warning">NO CDM CASH DEPOSIT FOUND IN TRANSACTION RECORD</div>
+    
+    <div
+      v-if="alert.no_cdm_transaction"
+      class="alert alert-warning"
+    >NO CDM CASH DEPOSIT FOUND IN TRANSACTION RECORD</div>
 
+    <div v-if="tables.verify">
     <table v-if="items.length > 0" class="table table-bordered text-left">
       <thead>
         <tr>
@@ -49,7 +84,9 @@
           <td class="text-uppercase">
             <div>{{ (item.transaction.cdm_data) ? item.transaction.cdm_data.data_pemohon.nama :'' }}</div>
             <div>
-              <i class='small-text'>{{ (item.transaction.cdm_data) ? item.transaction.cdm_data.data_pemohon.warganegara :'' }}</i>
+              <i
+                class="small-text"
+              >{{ (item.transaction.cdm_data) ? item.transaction.cdm_data.data_pemohon.warganegara :'' }}</i>
             </div>
           </td>
           <td class="text-center">
@@ -60,22 +97,25 @@
     </table>
 
     <div v-if="items.length > 0" class="text-right">
+      <div class="btn btn-outline-primary mr-1" @click="backToTransactionList">Back to cdm list</div>
       <div class="btn btn-primary" @click="pickedVerify">Verify</div>
+    </div>
+
     </div>
   </div>
 </template>
 
 <style>
 .small-text {
-  font-size: 0.7rem
+  font-size: 0.7rem;
 }
 </style>
 
 
 <script>
 import MainHeader from "@/components/MainHeader";
-import FileUpload from "vue-simple-upload/dist/FileUpload";
 import Axios from "axios";
+import Swal from "sweetalert2";
 
 import { CimbParser } from "@/packages/CimbParser";
 
@@ -84,8 +124,7 @@ import { CimbParser } from "@/packages/CimbParser";
 export default {
   name: "cdm_consilation",
   components: {
-    MainHeader,
-    FileUpload
+    MainHeader
   },
   data: function() {
     return {
@@ -94,9 +133,18 @@ export default {
       items: [],
       files: [],
       verify: [],
+      file: "",
       alert: {
         info: false,
-        no_cdm_transaction: false
+        no_cdm_transaction: false,
+        upload: {
+          buttonColor: "btn-primary",
+          buttonLabel: "UPLOAD"
+        }
+      },
+      tables: {
+        verify: false,
+        cdmList: true
       }
     };
   },
@@ -104,8 +152,42 @@ export default {
     this.listFiles();
   },
   methods: {
+    backToTransactionList: function(){
+      this.tables.verify = false
+      this.tables.cdmList = true
+
+    },
     pickedVerify: function() {
-      console.log(this.verify);
+      var totalTrue = 0;
+      this.verify.forEach(value => {
+        if (value) totalTrue++;
+      });
+
+      Swal.fire({
+        title: "Are you sure!",
+        text: `Are you sure to verify ${totalTrue} pulkam registration?`,
+        type: "question",
+        confirmButtonText: "Yes Verified",
+        showCancelButton: true,
+        cancelButtonText: "No...",
+        reverseButton: true
+      }).then(result => {
+        console.log(result);
+        if (result.dismiss == "cancel") {
+          Swal.fire({
+            title: "Ok, order received!!",
+            type: "info",
+            text: "Please make your decision again."
+          });
+        }
+        if (result.value) {
+          Swal.fire({
+            title: "Verified!!!",
+            text: "Item picked is successfully verified",
+            type: "success"
+          });
+        }
+      });
     },
     // messageData: function() {
     //   sseSource.addEventListener("message", e => {
@@ -129,19 +211,47 @@ export default {
       });
     },
     consolidate: async function(filename) {
-      this.alert.info = true
+      this.alert.info = true;
       Axios.get(
         process.env.VUE_APP_ENGINE_URL + "reader/cdm-consolidate/" + filename
       ).then(response => {
-        this.alert.info = false
+        this.alert.info = false;
         let resp = response.data;
         this.items = CimbParser.parserBulk(resp);
-        if(resp.length > 0){
-          this.alert.no_cdm_transaction = false
+        if (resp.length > 0) {
+          this.alert.no_cdm_transaction = false;
+          this.tables.verify = true
+          this.tables.cdmList = false
         } else {
-          this.alert.no_cdm_transaction = true
+          this.alert.no_cdm_transaction = true;
         }
       });
+    },
+    resetUploadButton: function() {
+      this.alert.upload.buttonLabel = "UPLOAD";
+      this.alert.upload.buttonColor = "btn-primary";
+      this.file = this.$refs.file.files[0];
+    },
+    uploadNewCdm: function() {
+      this.alert.upload.buttonLabel = "Uploading to server..., Please wait";
+      this.alert.upload.buttonColor = "btn-secondary";
+      let formData = new FormData();
+      formData.append("book", this.$refs.file.files[0]);
+
+      Axios.post(`${process.env.VUE_APP_ENGINE_URL}upload/cdm`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      })
+        .then(() => {
+          this.alert.upload.buttonLabel = "Upload Success";
+          this.alert.upload.buttonColor = "btn-success";
+          this.listFiles();
+        })
+        .catch(() => {
+          this.alert.upload.buttonLabel = "Upload Failed!!";
+          this.alert.upload.buttonColor = "btn-danger";
+        });
     }
   }
 };

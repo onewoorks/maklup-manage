@@ -47,7 +47,7 @@ export default {
     };
   },
   mounted: function() {
-    var link = this.$route.name;
+    // var link = this.$route.name;
   }
 };
 </script>
