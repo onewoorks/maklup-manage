@@ -8,6 +8,7 @@ import TetapanSistem from "@/views/TetapanSistem";
 import AgentVerify from "@/views/AgentVerify";
 import CdmConsilation from "@/views/CdmConsilation";
 import TicketPemohon from "@/views/TicketPemohon";
+import Login from '@/views/Login'
 
 Vue.use(Router);
 
@@ -19,6 +20,11 @@ export default new Router({
       path: "/",
       name: "home",
       component: Home
+    },
+    {
+      path: "/login",
+      name: "login",
+      component: Login
     },
     {
       path: "/registration",
