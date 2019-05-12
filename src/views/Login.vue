@@ -33,6 +33,9 @@
 </template>
 
 <script>
+import Axios from "axios";
+import { API } from "../Config";
+
 export default {
   name: "login",
   data() {
@@ -50,22 +53,32 @@ export default {
     };
   },
   methods: {
-    login() {
-      if (this.input.username != "" && this.input.password != "") {
-        if (
-          this.input.username == this.$parent.mockAccount.username &&
-          this.input.password == this.$parent.mockAccount.password
-        ) {
-          localStorage.setItem("authenticated", true);
-          localStorage.setItem("jwt-auth", "iwang");
-          this.$emit("authenticated", true);
-          this.$router.replace({ name: "home" });
-        } else {
-          this.alert.login = {
-            show: true,
-            text: "The username and / or password is incorrect"
-          };
+    checkUser: function() {
+      let body = {
+        username: this.input.username,
+        password: this.input.password,
+        module: 'manage'
+      };
+      Axios.post(`${API.baseurl}users/check-user`, body).then(
+        response => {
+          let resp = response.data.response;
+          if (resp.error === undefined) {
+            localStorage.setItem("jwt-auth", this.input.username);
+            localStorage.setItem('token', resp.token)
+            this.$emit("authenticated", true);
+            this.$router.replace({ name: "home" });
+          } else {
+            this.alert.login = {
+              show: true,
+              text: resp.error
+            };
+          }
         }
+      );
+    },
+    login: function() {
+      if (this.input.username != "" && this.input.password != "") {
+        this.checkUser();
       } else {
         this.alert.login = {
           show: true,

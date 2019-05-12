@@ -75,25 +75,18 @@ export default {
         mainView: "ycol col-md-9 ml-sm-auto col-lg-10 px-4"
       },
       authenticated: false,
-      mockAccount: {
-        username: "iwang",
-        password: "iwang"
-      }
     };
   },
   created: function(){
-    
-    if(localStorage.getItem('auth-jwt') == ''){
-      this.$router.replace({ name: "login" });
-    } else {
+    if(localStorage.getItem('token')==null){
+      this.$router.replace({ name: 'login'})
+    }
+    if(localStorage.getItem('token')){
       this.authenticated = true;
       this.$router.replace({name: "home"})
-    }    
+    }  
   },
   mounted: function() {
-    // if (!this.authenticated) {
-    //   this.$router.replace({ name: "login" });
-    // }
   },
   methods: {
     setAuthenticated(status) {
@@ -101,6 +94,7 @@ export default {
     },
     logout() {
       localStorage.removeItem('jwt-auth')
+      localStorage.removeItem('token')
       this.authenticated = false;
       this.$router.replace({ name: "login" });
     }
