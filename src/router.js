@@ -7,6 +7,7 @@ import Kutipan from "@/views/Kutipan";
 import TetapanSistem from "@/views/TetapanSistem";
 import AgentVerify from "@/views/AgentVerify";
 import CdmConsilation from "@/views/CdmConsilation";
+import CdmVerify from "@/views/CdmVerify"
 import TicketPemohon from "@/views/TicketPemohon";
 import Login from '@/views/Login'
 
@@ -55,6 +56,11 @@ export default new Router({
       path: "/cdm-consilation",
       name: "cdm_consilation",
       component: CdmConsilation
+    },
+    {
+      path: "/cdm-verify",
+      name: "cdm-verify",
+      component: CdmVerify
     },
     {
       path: "/ticket-pemohon/:register_id/:temporary_id",
