@@ -72,7 +72,9 @@
           <th class="text-center">Transaction No</th>
           <th class="text-center">Jumlah Deposit</th>
           <th class="text-center" style="width:400px;">Pemohon</th>
-          <th class="text-center">Verify</th>
+          <th class="text-center">Verify
+            <input type='checkbox' @click='selectAll($event)' />
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -90,7 +92,7 @@
             </div>
           </td>
           <td class="text-center">
-            <input type="checkbox" v-model="verify[key]">
+            <input type="checkbox" v-model="verify[key]" :value="item">
           </td>
         </tr>
       </tbody>
@@ -118,8 +120,7 @@ import Axios from "axios";
 import Swal from "sweetalert2";
 
 import { CimbParser } from "@/packages/CimbParser";
-
-// const sseSource = new EventSource("http://localhost:8888/sse/cdm-stream");
+import { version } from 'punycode';
 
 export default {
   name: "cdm_consilation",
@@ -133,6 +134,7 @@ export default {
       items: [],
       files: [],
       verify: [],
+      pickitem: [],
       file: "",
       alert: {
         info: false,
@@ -151,17 +153,37 @@ export default {
   mounted: function() {
     this.listFiles();
   },
+  computed: {
+    verifyAll: function(){
+
+    }
+  },
   methods: {
     backToTransactionList: function(){
       this.tables.verify = false
       this.tables.cdmList = true
 
     },
+    selectAll: function(event){
+      this.verify = []
+      let checked = event.target.checked
+      if(checked){
+        this.items.forEach((value,key)=>{
+          this.verify.push(value)
+        })
+      }
+    },
     pickedVerify: function() {
       var totalTrue = 0;
-      this.verify.forEach(value => {
-        if (value) totalTrue++;
+      this.verify.forEach((value,key) => {
+        if (value){
+          if(value == true){
+            this.verify[key] = this.items[key].transaction
+          }
+          totalTrue++;
+        } 
       });
+      console.log(this.verify)
 
       Swal.fire({
         title: "Are you sure!",
@@ -170,9 +192,7 @@ export default {
         confirmButtonText: "Yes Verified",
         showCancelButton: true,
         cancelButtonText: "No...",
-        reverseButton: true
       }).then(result => {
-        console.log(result);
         if (result.dismiss == "cancel") {
           Swal.fire({
             title: "Ok, order received!!",
@@ -181,6 +201,7 @@ export default {
           });
         }
         if (result.value) {
+          this.approveTransaction()
           Swal.fire({
             title: "Verified!!!",
             text: "Item picked is successfully verified",
@@ -189,11 +210,17 @@ export default {
         }
       });
     },
-    // messageData: function() {
-    //   sseSource.addEventListener("message", e => {
-    //     this.ssedata = e.data
-    //   });
-    // },
+    approveTransaction: function(){
+      let approveList = []
+      this.verify.forEach(value => {
+        if(value) approveList.push(value.transaction)
+      })
+      Axios.post(`http://localhost/pulkam-api/cdm/approve-list`,approveList)
+      .then(response => {
+        let resp = response.data.response
+        console.log(resp)
+      })
+    },
     listFiles: function() {
       Axios.get(process.env.VUE_APP_ENGINE_URL + "reader/list-files").then(
         response => {
