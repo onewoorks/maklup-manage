@@ -35,6 +35,11 @@
       </div>
     </div>
 
+    <div
+      v-if="alert.load_transaction"
+      class="alert alert-info"
+    >Contacting backend for list of uploaded transactions</div>
+
     <table v-if="tables.cdmList" class="table table-bordered">
       <thead>
         <tr>
@@ -57,52 +62,59 @@
     </table>
 
     <div v-if="alert.info" class="alert alert-info">TRANSACTION FETCH & CHECKING... PLEASE WAIT!</div>
-    
+
     <div
       v-if="alert.no_cdm_transaction"
       class="alert alert-warning"
     >NO CDM CASH DEPOSIT FOUND IN TRANSACTION RECORD</div>
 
     <div v-if="tables.verify">
-    <table v-if="items.length > 0" class="table table-bordered text-left">
-      <thead>
-        <tr>
-          <th class="text-center">Date/Time</th>
-          <th class="text-center">Transaction Detail</th>
-          <th class="text-center">Transaction No</th>
-          <th class="text-center">Jumlah Deposit</th>
-          <th class="text-center" style="width:400px;">Pemohon</th>
-          <th class="text-center">Verify
-            <input type='checkbox' @click='selectAll($event)' />
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(item, key) in items" :key="key">
-          <td>{{ item.datetime }}</td>
-          <td>{{ item.transaction.type }}</td>
-          <td>{{ item.transaction.detail.trans_ref }}</td>
-          <td class="text-right">{{ item.moneyIn }}</td>
-          <td class="text-uppercase">
-            <div>{{ (item.transaction.cdm_data) ? item.transaction.cdm_data.data_pemohon.nama :'' }}</div>
-            <div>
-              <i
-                class="small-text"
-              >{{ (item.transaction.cdm_data) ? item.transaction.cdm_data.data_pemohon.warganegara :'' }}</i>
-            </div>
-          </td>
-          <td class="text-center">
-            <input type="checkbox" v-model="verify[key]" :value="item">
-          </td>
-        </tr>
-      </tbody>
-    </table>
+      <table v-if="items.length > 0" class="table table-bordered text-left">
+        <thead>
+          <tr>
+            <th class="text-center">Date/Time</th>
+            <th class="text-center">Transaction Detail</th>
+            <th class="text-center">Transaction No</th>
+            <th class="text-center">Jumlah Deposit</th>
+            <th class="text-center" style="width:400px;">Pemohon</th>
+            <th class="text-center">
+              Verify
+              <input type="checkbox" @click="selectAll($event)">
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(item, key) in items" :key="key">
+            <td>{{ item.datetime }}</td>
+            <td>{{ item.transaction.type }}</td>
+            <td>{{ item.transaction.detail.trans_ref }}</td>
+            <td class="text-right">{{ item.moneyIn }}</td>
+            <td class="text-uppercase">
+              <div>{{ (item.transaction.cdm_data) ? item.transaction.cdm_data.data_pemohon.nama :'' }}</div>
+              <div>
+                <i
+                  class="small-text"
+                >{{ (item.transaction.cdm_data) ? item.transaction.cdm_data.data_pemohon.warganegara :'' }}</i>
+              </div>
+            </td>
+            <td class="text-center">
+              <div v-if="item.transaction.cdm_data.status === 'semakan'">
+                {{ item.transaction.cdm_data.status }}
+                <input
+                  type="checkbox"
+                  v-model="verify[key]"
+                  :value="item"
+                >
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
-    <div v-if="items.length > 0" class="text-right">
-      <div class="btn btn-outline-primary mr-1" @click="backToTransactionList">Back to cdm list</div>
-      <div class="btn btn-primary" @click="pickedVerify">Verify</div>
-    </div>
-
+      <div v-if="items.length > 0" class="text-right">
+        <div class="btn btn-outline-primary mr-1" @click="backToTransactionList">Back to cdm list</div>
+        <div class="btn btn-primary" @click="pickedVerify">Verify</div>
+      </div>
     </div>
   </div>
 </template>
@@ -120,7 +132,7 @@ import Axios from "axios";
 import Swal from "sweetalert2";
 
 import { CimbParser } from "@/packages/CimbParser";
-import { version } from 'punycode';
+import { version } from "punycode";
 
 export default {
   name: "cdm_consilation",
@@ -142,7 +154,8 @@ export default {
         upload: {
           buttonColor: "btn-primary",
           buttonLabel: "UPLOAD"
-        }
+        },
+        load_transaction: true
       },
       tables: {
         verify: false,
@@ -154,46 +167,45 @@ export default {
     this.listFiles();
   },
   computed: {
-    verifyAll: function(){
-
-    }
+    verifyAll: function() {}
   },
   methods: {
-    backToTransactionList: function(){
-      this.tables.verify = false
-      this.tables.cdmList = true
-
+    backToTransactionList: function() {
+      this.verify = [];
+      this.tables.verify = false;
+      this.tables.cdmList = true;
     },
-    selectAll: function(event){
-      this.verify = []
-      let checked = event.target.checked
-      if(checked){
-        this.items.forEach((value,key)=>{
-          this.verify.push(value)
-        })
+    selectAll: function(event) {
+      this.verify = [];
+      let checked = event.target.checked;
+      if (checked) {
+        this.items.forEach((value, key) => {
+          this.verify.push(true);
+        });
       }
     },
-    pickedVerify: function() {
-      var totalTrue = 0;
-      this.verify.forEach((value,key) => {
-        if (value){
-          if(value == true){
-            this.verify[key] = this.items[key].transaction
+    pickedVerify: async function() {
+      this.pickitem = [];
+      let totalTrue = 0;
+      let listPicked = this.verify;
+      this.verify.forEach((value, key) => {
+        if (value == true) {
+          if (this.items[key].transaction.cdm_data.status === "semakan") {
+            this.pickitem.push(this.items[key]);
+            totalTrue++
           }
-          totalTrue++;
-        } 
+        }
       });
-      console.log(this.verify)
-
       Swal.fire({
         title: "Are you sure!",
         text: `Are you sure to verify ${totalTrue} pulkam registration?`,
         type: "question",
         confirmButtonText: "Yes Verified",
         showCancelButton: true,
-        cancelButtonText: "No...",
+        cancelButtonText: "No..."
       }).then(result => {
         if (result.dismiss == "cancel") {
+          this.pickitem = [];
           Swal.fire({
             title: "Ok, order received!!",
             type: "info",
@@ -201,7 +213,7 @@ export default {
           });
         }
         if (result.value) {
-          this.approveTransaction()
+          this.approveTransaction();
           Swal.fire({
             title: "Verified!!!",
             text: "Item picked is successfully verified",
@@ -210,22 +222,24 @@ export default {
         }
       });
     },
-    approveTransaction: function(){
-      let approveList = []
-      this.verify.forEach(value => {
-        if(value) approveList.push(value.transaction)
-      })
-      Axios.post(`http://localhost/pulkam-api/cdm/approve-list`,approveList)
-      .then(response => {
-        let resp = response.data.response
-        console.log(resp)
-      })
+    approveTransaction: function() {
+      let approveList = [];
+      this.pickitem.forEach(value => {
+        if (value) approveList.push(value.transaction);
+      });
+      Axios.post(
+        `${process.env.VUE_APP_BASE_API}cdm/approve-list`,
+        approveList
+      ).then(response => {
+        let resp = response.data.response;
+      });
     },
     listFiles: function() {
       Axios.get(process.env.VUE_APP_ENGINE_URL + "reader/list-files").then(
         response => {
           let resp = response.data;
           this.files = resp;
+          this.alert.load_transaction = false;
         }
       );
     },
@@ -247,8 +261,8 @@ export default {
         this.items = CimbParser.parserBulk(resp);
         if (resp.length > 0) {
           this.alert.no_cdm_transaction = false;
-          this.tables.verify = true
-          this.tables.cdmList = false
+          this.tables.verify = true;
+          this.tables.cdmList = false;
         } else {
           this.alert.no_cdm_transaction = true;
         }
@@ -264,7 +278,6 @@ export default {
       this.alert.upload.buttonColor = "btn-secondary";
       let formData = new FormData();
       formData.append("book", this.$refs.file.files[0]);
-
       Axios.post(`${process.env.VUE_APP_ENGINE_URL}upload/cdm`, formData, {
         headers: {
           "Content-Type": "multipart/form-data"

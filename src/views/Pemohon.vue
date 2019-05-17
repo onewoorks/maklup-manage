@@ -515,7 +515,7 @@ export default {
         tujuan_perjalanan: "Bercuti",
         tujuan_perjalanan_lain: "",
         tiket_pulang: {
-          jenis_pengangkutan: ""
+          jenis_pengangkutan: "KERETA, KERETAPI, BAS"
         }
       }
     };
@@ -627,7 +627,6 @@ export default {
         }
       }).then(response => {
         let resp = response.data.response;
-        console.log(resp);
         if (resp.payment.status == "paid") {
           Swal.fire({
             title: "Success!",
